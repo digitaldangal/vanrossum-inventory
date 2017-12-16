@@ -1,0 +1,24 @@
+<head>
+
+</head>
+<body>
+    <h1 id="title">Nieuw bestand gevonden.</h1>
+    <h1>Kies Zone:</h1>
+    <form>
+        <input type="text" id="zone"  autofocus/>
+        <input type="submit" onsubmit="addZone()">
+    </form>
+    <script>
+        const { ipcRenderer, remote } = require('electron')
+        const title = document.getElementById('title')
+
+        ipcRenderer.on('add-title', (event, arg) => {
+            title.appendChild(`<h2>${arg}</h2>`)
+        })
+
+        function addZone (e) {
+            console.log(e)
+            ipcRenderer.send('add-zone', zone)
+        }
+    </script>
+</body>
