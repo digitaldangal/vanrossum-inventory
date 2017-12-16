@@ -1,0 +1,16 @@
+{
+  "name": "van-rossum-inventarisatie",
+  "version": "1.0.0",
+  "description": "Changes files that were scanned to the proper format",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "electron": "electron ."
+  },
+  "author": "Pieter Stokkink",
+  "license": "ISC",
+  "dependencies": {
+    "chokidar": "^1.7.0",
+    "electron": "^1.7.9"
+  }
+}
