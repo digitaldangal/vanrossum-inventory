@@ -1,0 +1,28 @@
+<head>
+
+</head>
+<body>
+    <h1>Scan Transform</h1>
+    <p>Selecteer map waar bestanden terecht komen:</p>
+    <form >
+        <button type="button" id="map">Kies map</button>
+    </form>
+    <script>
+        const { ipcRenderer, remote } = require('electron')
+        const index = remote.require('./index.js')
+        
+        const chooseFolder = document.getElementById('map')
+        
+        chooseFolder.addEventListener('click', () => {
+            remote.dialog.showOpenDialog({
+                properties: ['openDirectory']
+            }, (path) => {
+                if(path){
+                    ipcRenderer.send('watch-folder', path)
+                }else {
+                    console.log("No path selected")
+                }
+            })
+        },false)
+    </script>
+</body>
