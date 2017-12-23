@@ -1,122 +1,84 @@
 const electron = require('electron')
 const chokidar = require('chokidar')
 const { app, BrowserWindow, Menu, ipcMain } = electron
+const fs = require('fs')
+const path = require('path')
+const child = require('child_process').exec
 
 let mainWindow
+let mainFolder
+let sender
+let watcher
 
 app.on('ready', () => {
     mainWindow = new BrowserWindow({ title: 'van Rossum Inventarisatie' })
-    mainWindow.loadURL(`file://${__dirname}/main.html`)
-
-    // const mainMenu = Menu.buildFromTemplate(menuTemplate)
-    // Menu.setApplicationMenu(mainMenu)
+    mainWindow.loadURL(`file://${__dirname}/src/index.html`)
 })
-
-// const menuTemplate = [
-//     {
-//         label: 'File',
-//         submenu: [
-//             {
-//                 label: 'Afsluiten',
-//                 accelerator: 'Ctrl+Q',
-//                 click() {
-//                     app.quit()
-//                 }
-//             }
-//         ]
-//     }
-// ]
 
 ipcMain.on('watch-folder', (event, folder) => {
-    StartWatcher(folder[0])
+    watcher = undefined
+    StartWatcher(folder[0], event.sender)
+    mainFolder = folder[0]
+    if (!fs.existsSync(`${mainFolder}/output`)) {
+        fs.mkdirSync(`${mainFolder}/output`)
+        fs.mkdirSync(`${mainFolder}/input`)
+    } else {
+        let files = fs.readdirSync(`${mainFolder}/output`)
+        let zones = files.map(file => {
+            return Number(file.slice(3, -4))
+        })
+        event.sender.send('existing-zones', zones)
+    }
 })
 
-ipcMain.on('add-zone', (event, arg) => {
-    console.log(event, arg)
+ipcMain.on('add-zone', (event, zone, file) => {
+    console.log(`zone ${zone} added for ${file}`)
+    let inputDest = `${mainFolder}/input/${('0000' + zone).slice(-4)}.txt`
+    let outputDest = `${mainFolder}/output/stk${('0000' + zone).slice(-4)}.txt`
+    let contents = fs.readFileSync(file, 'utf8')
+    fs.writeFileSync(inputDest, contents)
+    try {
+        const transformedContents = contents
+            .split('\r\n')
+            .filter(e => e.length && !e.includes('\t9999'))
+            .map((line, index) => {
+                let [isbn, amount] = line.split('\t')
+                if (amount > 9999 || isbn.toString().length > 13 || isbn.toString().length < 10) {
+                    throw new Error('leesfout op lijn ' + (index + 1))
+                }
+                return [('0000' + zone).slice(-4), isbn, ('0000' + amount).slice(-4)].join(',')
+            })
+            .join('\r\n')
+        fs.writeFileSync(outputDest, transformedContents)
+        fs.unlinkSync(file)
+        event.sender.send('file-transformed', `stk${('0000' + zone).slice(-4)}.txt`, zone)
+    } catch (error) {
+        let editor = process.platform.includes('win32') ? 'notepad': 'atom'
+        child(`${editor} ${file}`)
+        event.sender.send('io-error', error.message, inputDest)
+    }
 })
 
-let watcher
 
-
-function StartWatcher(path) {
+function StartWatcher(path, sender) {
     watcher = chokidar.watch(path, {
-        ignored: /[\/\\]\./,
+        ignored: [/[\/\\]\./, `${path}/input/*`, `${path}/output/*`],
         persistent: true
     })
 
     function onWatcherReady() {
         console.info('From here can you check for real changes, the initial scan has been completed.')
-        mainWindow.loadURL(`file://${__dirname}/klaarvoorscannen.html`)
+        sender.send('watcher-ready')
     }
 
     watcher
         .on('add', function (path) {
             console.log('File', path, 'has been added')
-            mainWindow.loadURL(`file://${__dirname}/kieszone.html`)
-        })
-        .on('addDir', function (path) {
-            console.log('Directory', path, 'has been added')
-
+            sender.send('add-title', path)
         })
         .on('change', function (path) {
             console.log('File', path, 'has been changed')
-
-        })
-        .on('unlink', function (path) {
-            console.log('File', path, 'has been removed')
-
-        })
-        .on('unlinkDir', function (path) {
-            console.log('Directory', path, 'has been removed')
-
-        })
-        .on('error', function (error) {
-            console.log('Error happened', error)
-
+            sender.send('add-title', path)
         })
         .on('ready', onWatcherReady)
 }
-
-// document.getElementById("start").addEventListener("click",function(e){
-//     const {dialog} = require('electron').remote
-//     dialog.showOpenDialog({
-//         properties: ['openDirectory']
-//     },function(path){
-//         if(path){
-//             StartWatcher(path[0])
-//         }else {
-//             console.log("No path selected")
-//         }
-//     })
-// },false)
-
-//  document.getElementById("stop").addEventListener("click",function(e){
-//      if(!watcher){
-//          console.log("You need to start first the watcher")
-//      }else{
-//          watcher.close()
-//          document.getElementById("start").disabled = false
-//          showInLogFlag = false
-//          document.getElementById("messageLogger").innerHTML = "Nothing is being watched"
-//      }
-//  },false)
-
-//  function resetLog(){
-//      return document.getElementById("log-container").innerHTML = ""
-//  }
-
-//  function addLog(message,type){
-//      var el = document.getElementById("log-container")
-//      var newItem = document.createElement("LI")       // Create a <li> node
-//      var textnode = document.createTextNode(message)  // Create a text node
-//      if(type == "delete"){
-//          newItem.style.color = "red"
-//      }else if(type == "change"){
-//          newItem.style.color = "blue"
-//      }else{
-//          newItem.style.color = "green"
-//      }
-
-//      newItem.appendChild(textnode)                    // Append the text to <li>
-//      el.appendChild(newItem)
-//  }
