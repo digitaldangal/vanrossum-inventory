@@ -8,7 +8,6 @@ import ChooseZone from './ChooseZone'
 
 class Scan extends Component {
     fileFinder = () => {
-        console.log(this.props)
         if (this.props.success) {
             return (
                 <div>
