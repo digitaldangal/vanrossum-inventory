@@ -1,0 +1,7 @@
+export const CHOOSE_PATH = 'CHOOSE_PATH'
+export const CANCEL = 'CANCEL'
+export const ADD_ZONE = 'ADD_ZONE'
+export const ADD_FILE = 'ADD_FILE'
+export const EXISTING_ZONES = 'EXISTING_ZONES'
+export const IO_ERROR = 'IO_ERROR'
+export const FILE_TRANSFORMED = 'FILE_TRANSFORMED'
