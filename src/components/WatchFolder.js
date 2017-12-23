@@ -24,8 +24,7 @@ class WatchFolder extends Component {
         if (this.props.path) {
             return (
                 <div>
-                    <p>Bestanden die in {this.props.path} terechtkomen zullen worden getransformeerd</p>
-                    <button onClick={this.clickHandler.bind(this)}>Selecteer andere locatie</button>
+                    <p>Bestanden die in {this.props.path} terechtkomen zullen worden omgezet</p>
                     {this.props.children}
                 </div>
             )
