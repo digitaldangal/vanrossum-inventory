@@ -6,7 +6,6 @@ import { Provider } from 'react-redux'
 import store from './reducers'
 
 import Main from './components/Main'
-import Zone from './components/Zone'
 import Scan from './components/Scan'
 
 ReactDOM.render(
