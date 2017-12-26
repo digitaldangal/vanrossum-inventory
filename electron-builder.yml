@@ -24,14 +24,14 @@ dmg:
       x: 130
       y: 150
 
-mac:
-  target: dmg
-  category: public.app-category.tools
+# mac:
+#   target: dmg
+#   category: public.app-category.tools
 
 win:
   target: portable
 
-linux:
-  target:
-    - deb
-    - AppImage
+# linux:
+#   target:
+#     - deb
+#     - AppImage
