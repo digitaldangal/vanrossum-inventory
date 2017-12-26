@@ -54,8 +54,11 @@ class Scan extends Component {
 
 function mapStateToThis (state) {
     const file = state.file
-    const pathArr = file.split(/[\/\\]/)
-    const fileName = pathArr[pathArr.length-1]
+    let fileName
+    if (file) {
+        let pathArr = file.split(/[\/\\]/)
+        fileName = pathArr[pathArr.length-1]
+    }
     return {
         path: state.path,
         file,
