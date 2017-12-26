@@ -7,7 +7,10 @@
     "start": "webpack-dev-server",
     "electron": "electron ."
   },
-  "author": "Pieter Stokkink",
+  "author": {
+    "name": "Pieter Stokkink",
+    "email": "pieter@bedrijfsdenker.nl"
+  },
   "license": "ISC",
   "dependencies": {
     "babel-core": "^6.26.0",
