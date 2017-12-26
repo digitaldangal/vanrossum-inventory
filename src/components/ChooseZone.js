@@ -31,7 +31,7 @@ class ChooseZone extends Component {
 
     render () {
         return (
-            <div className="kieszone">
+            <div className="choosezone">
                 <h1>Kiez Zone</h1>
                 <form onSubmit={this.handleSubmit}>
                     <input type="number" value={this.state.zone} onChange={this.handleChange}/>

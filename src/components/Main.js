@@ -16,7 +16,7 @@ class Main extends Component {
 
     render () {
         return (
-            <div className="app">
+            <div className="main">
                 <WatchFolder/>
                 {this.props.children}
                 {this.redirect()}

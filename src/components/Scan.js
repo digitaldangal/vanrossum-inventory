@@ -21,7 +21,7 @@ class Scan extends Component {
                 <div>
                     <WatchFolder />
                     <h1>Oeps! {this.props.error}</h1>
-                    <h2>{this.props.file} bevat fout(en), bewerk het bestand en sla het op. Het wordt dan vanzelf opnieuw geprobeerd.</h2>
+                    <h2>{this.props.fileName} bevat fout(en), bewerk het bestand en sla het op. Het wordt dan vanzelf opnieuw geprobeerd.</h2>
                     <button onClick={this.props.cancelEdit}>Annuleren</button>
                 </div>
             ) 
@@ -29,7 +29,7 @@ class Scan extends Component {
             return (
                 <div>
                     <WatchFolder />
-                    <h1>Bestand gevonden: {this.props.file}</h1>
+                    <h1>Bestand gevonden: {this.props.fileName}</h1>
                     <ChooseZone />
                 </div>
             )
@@ -44,7 +44,7 @@ class Scan extends Component {
     }
     render () {
         return (
-            <div className="app">
+            <div className="scan">
                 {this.fileFinder()}
                 {this.props.children}
             </div>
@@ -53,11 +53,15 @@ class Scan extends Component {
 }
 
 function mapStateToThis (state) {
+    const file = state.file
+    const pathArr = file.split(/[\/\\]/)
+    const fileName = pathArr[pathArr.length-1]
     return {
         path: state.path,
-        file: state.file,
+        file,
         success: state.success,
-        error: state.error
+        error: state.error,
+        fileName
     }
 }
 

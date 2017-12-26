@@ -41,7 +41,7 @@ class WatchFolder extends Component {
 
     render () {
         return (
-            <div>
+            <div className="watchfolder">
                 { this.show() }
             </div>
         )
